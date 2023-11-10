@@ -1,0 +1,16 @@
+$status: (
+  primary: #ff008d,
+  success: #00b42a,
+  danger: #f53f3f,
+  warning: #ff7d00,
+  message: #86909c
+);
+
+:root {
+  --class-prefix: t;
+  @each $statu, $value in $status {
+    @for $i from 1 through 10 {
+      --color-#{$statu}-#{$i}: #{lighten($value, ($i - 1) * 6%)};
+    }
+  }
+}
