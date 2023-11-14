@@ -1,19 +1,18 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
-const text = ref('（珠海市经济特区）盛诺网络科技有限责任公司')
+
+const files = ref([])
 </script>
 
 <template>
-  <div id="#app">
-    <t-adaptive-input
-      v-model="text"
-      typeface="msyh"
-      :size="20"
-    />
-    <t-adaptive-textarea
-      v-model="text"
-      typeface="msyh"
-      :size="12"
-    />
-  </div>
+  <t-upload
+    :limit="10"
+    v-model:files="files"
+    accept=".mp4, image/*"
+    type="card"
+    response-type="text"
+    url="http://localhost:3000/v1/api/utils/upload"
+  />
+  <!-- <t-space :size="[20, 30]" :wrapItem="false">
+  </t-space> -->
 </template>

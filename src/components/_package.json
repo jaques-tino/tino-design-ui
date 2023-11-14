@@ -1,0 +1,27 @@
+{
+  "name": "tino-design-ui",
+  "version": "0.1.1",
+  "description": "Tino Design UI: A Vue.js 3 UI Library",
+  "main": "tino-design-ui.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jaques-tino/tino-design-ui.git"
+  },
+  "keywords": [
+    "tino-design-ui",
+    "ui"
+  ],
+  "author": "冯子健",
+  "license": "ISC",
+  "types": "./tino-design-ui.d.ts",
+  "bugs": {
+    "url": "https://github.com/jaques-tino/tino-design-ui/issues"
+  },
+  "homepage": "https://github.com/jaques-tino/tino-design-ui#readme",
+  "dependencies": {
+    "vue": "^3.3.4"
+  }
+}

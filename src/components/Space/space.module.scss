@@ -1,0 +1,27 @@
+.space {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+  &.reverse {
+    flex-direction: row-reverse;
+  }
+
+  &.vertical {
+    flex-direction: column;
+  }
+
+  &.vertical.reverse {
+    flex-direction: column-reverse;
+  }
+
+  &.inline {
+    display: inline-flex;
+  }
+
+  &.wrap {
+    flex-wrap: wrap;
+  }
+}

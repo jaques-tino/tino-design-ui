@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import css from './adaptive-input.module.scss'
-import { defineProps, ref, defineEmits, onMounted, watch, withDefaults, nextTick } from 'vue'
+import { ref, onMounted, watchEffect, withDefaults, nextTick } from 'vue'
 
 export interface AdaptiveInput {
   customClassPrefix?: string
@@ -18,7 +18,7 @@ export interface AdaptiveInput {
 }
 
 const zoom = ref(1)
-const textContainer = ref<HTMLDivElement>()
+const emits = defineEmits(['update:modelValue', 'current-zoom'])
 
 const props = withDefaults(defineProps<AdaptiveInput>(), {
   customClassPrefix: 't',
@@ -35,21 +35,27 @@ const props = withDefaults(defineProps<AdaptiveInput>(), {
   textColor: '#000000'
 })
 
-const emits = defineEmits(['update:modelValue', 'current-zoom'])
 const classPrefix = ref(props.customClassPrefix)
 const handleKeyup = (event: KeyboardEvent) => {
   const value = (event.target as HTMLInputElement).value
   emits('update:modelValue', value)
 }
 
+const canvas = document.createElement('canvas')
+const context = canvas.getContext('2d')
+
 const getZoom = () => {
-  const myZoom = props.w / textContainer.value!.offsetWidth
+  context!.font = `${props.italic ? 'italic' : 'normal'} ${props.weight ? 'bold' : 'normal'} ${props.size}px ${props.typeface}`
+  const width = context!.measureText(props.modelValue).width
+  const offset = props.italic ? 2 : 0
+  const myZoom = (props.w - offset) / width
   zoom.value = myZoom < 1 ? myZoom : 1
   emits('current-zoom', zoom.value)
 }
 
 onMounted(getZoom)
-watch(props, () => {
+watchEffect(() => {
+  props.w, props.h, props.italic, props.modelValue, props.size, props.typeface, props.weight
   nextTick(getZoom)
 })
 </script>
@@ -77,18 +83,6 @@ watch(props, () => {
       }"
       @keyup="handleKeyup"
     />
-    <div
-      ref="textContainer"
-      :class="css['text-container']"
-      :style="{
-        fontFamily: typeface,
-        fontStyle: italic ? 'italic' : 'normal',
-        fontSize: size + 'px',
-        fontWeight: weight ? 600 : 400
-      }"
-    >
-      {{ modelValue }}
-    </div>
   </div>
 </template>
 

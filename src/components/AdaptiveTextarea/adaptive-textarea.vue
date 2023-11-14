@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import css from './adaptive-textarea.module.scss'
-import { defineProps, ref, defineEmits, onMounted, watch, withDefaults, nextTick } from 'vue'
+import { ref, onMounted, watchEffect, withDefaults, nextTick } from 'vue'
 
-export interface AdaptiveInput {
+export interface AdaptiveTextarea {
   customClassPrefix?: string
   modelValue?: string
   w?: number
@@ -19,9 +19,8 @@ export interface AdaptiveInput {
 }
 
 const zoom = ref(1)
-const textContainer = ref<HTMLDivElement>()
 
-const props = withDefaults(defineProps<AdaptiveInput>(), {
+const props = withDefaults(defineProps<AdaptiveTextarea>(), {
   customClassPrefix: 't',
   modelValue: '',
   w: 120,
@@ -39,21 +38,43 @@ const props = withDefaults(defineProps<AdaptiveInput>(), {
 
 const emits = defineEmits(['update:modelValue', 'current-zoom'])
 const classPrefix = ref(props.customClassPrefix)
+const size = ref(props.size)
 const handleKeyup = (event: KeyboardEvent) => {
   const value = (event.target as HTMLInputElement).value
   emits('update:modelValue', value)
 }
 
+const canvas = document.createElement('canvas')
+const context = canvas.getContext('2d')
+
 const getZoom = () => {
-  // 计算行
-  const row = Math.floor(props.h / (props.size * props.lineHeight))
-  const myZoom = +(props.w / (textContainer.value!.offsetWidth / row)).toString().split('.').map((chars) => chars[0]).join('.')
-  zoom.value = myZoom < 1 ? myZoom : 1
+  context!.font = `${props.italic ? 'italic' : 'normal'} ${props.weight ? 'bold' : 'normal'} ${props.size}px ${props.typeface}`
+  let measureText = context!.measureText(props.modelValue)
+  let width = measureText.width
+  let height = (measureText.actualBoundingBoxAscent + measureText.actualBoundingBoxDescent) * props.lineHeight
+  while(size.value > 0) {
+    let row = 1
+    if (props.h > height) {
+      row = Math.floor(props.h / height)
+    }
+    
+    if ((width / row) <= props.w && (height * row) <= props.h) {
+      break
+    }
+    size.value -= 0.1
+    context!.font = `${props.italic ? 'italic' : 'normal'} ${props.weight ? 'bold' : 'normal'} ${size.value}px ${props.typeface}`
+    measureText = context!.measureText(props.modelValue)
+    width = measureText.width
+    height = (measureText.actualBoundingBoxAscent + measureText.actualBoundingBoxDescent) * props.lineHeight
+  }
+  
+  zoom.value = size.value / props.size
   emits('current-zoom', zoom.value)
 }
 
 onMounted(getZoom)
-watch(props, () => {
+watchEffect(() => {
+  props.w, props.h, props.italic, props.modelValue, props.size, props.typeface, props.weight, props.lineHeight
   nextTick(getZoom)
 })
 </script>
@@ -82,19 +103,6 @@ watch(props, () => {
       }"
       @keyup="handleKeyup"
     />
-    <div
-      ref="textContainer"
-      :class="css['text-container']"
-      :style="{
-        fontFamily: typeface,
-        fontStyle: italic ? 'italic' : 'normal',
-        fontSize: size + 'px',
-        fontWeight: weight ? 600 : 400,
-        lineHeight
-      }"
-    >
-      {{ modelValue }}
-    </div>
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 {
-  "name": "tino-design-ui-copy",
+  "name": "tino-design-ui",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@types/crypto-js": "^4.2.1",
     "@types/node": "^20.9.0",
+    "crypto-js": "^4.2.0",
     "sass": "^1.69.5",
     "sass-loader": "^13.3.2",
     "vite-plugin-dts": "^3.6.3",
